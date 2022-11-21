@@ -1,7 +1,7 @@
-from remoteSQL.orm.remoteSQL import ExampleTable
-
-from sqlalchemy.orm import configure_mappers
 from formshare.models.schema import initialize_schema
+from sqlalchemy.orm import configure_mappers
+
+from remoteSQL.orm.tasks import RemoteSQLTask
 
 configure_mappers()
 

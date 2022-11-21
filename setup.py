@@ -33,7 +33,7 @@ setup(
     extras_require={"testing": tests_require},
     install_requires=requires,
     entry_points={
-        "formshare.plugins": ["remoteSQL = remoteSQL.plugin:remoteSQL"],
+        "formshare.plugins": ["remoteSQL = remoteSQL.plugin:RemoteSQL"],
         "formshare.tasks": ["remoteSQL = remoteSQL.celerytasks"],
     },
 )

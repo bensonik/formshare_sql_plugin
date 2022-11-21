@@ -3,10 +3,8 @@ from __future__ import with_statement
 from logging.config import fileConfig
 
 from alembic import context
-from sqlalchemy import engine_from_config, pool
-
 from formshare.models.meta import Base
-from remoteSQL import orm
+from sqlalchemy import engine_from_config, pool
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
@@ -21,6 +19,7 @@ fileConfig(config.config_file_name)
 # from myapp import mymodel
 # target_metadata = mymodel.Base.metadata
 target_metadata = Base.metadata
+
 
 # other values from the config, defined by the needs of env.py,
 # can be acquired:
@@ -51,7 +50,7 @@ def run_migrations_offline():
         literal_binds=True,
         compare_type=True,
         include_object=include_object,
-        version_table="remoteSQL_alembic_version",
+        version_table="remote_sql_alembic_version",
     )
 
     with context.begin_transaction():
@@ -77,7 +76,7 @@ def run_migrations_online():
             target_metadata=target_metadata,
             compare_type=True,
             include_object=include_object,
-            version_table="remoteSQL_alembic_version",
+            version_table="remote_sql_alembic_version",
         )
 
         with context.begin_transaction():
