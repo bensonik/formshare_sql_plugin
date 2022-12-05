@@ -1,22 +1,47 @@
-from formshare.models.meta import Base
-from sqlalchemy import (
-    Column,
-    DateTime,
-    ForeignKey,
-    Unicode,
-)
-from sqlalchemy.orm import relationship
+from remoteSQL.orm.remoteSQL import RemoteSQLTask
+import datetime
+import logging
+
+log = logging.getLogger("formshare")
 
 
-class RemoteSQLTask(Base):
-    __tablename__ = "remote_sql_task"
-
-    task_id = Column(Unicode(64), primary_key=True)
-    user_id = Column(
-        ForeignKey("fsuser.user_id", ondelete="CASCADE"),
-        index=True,
+def add_task(request, user_id, task_id, task_file):
+    new_task = RemoteSQLTask(
+        task_id=task_id,
+        user_id=user_id,
+        task_cdate=datetime.datetime.now(),
+        task_file=task_file,
     )
-    task_cdate = Column(DateTime)
-    task_file = Column(Unicode(64))
+    try:
+        request.dbsession.add(new_task)
+        request.dbsession.flush()
+        return True, ""
+    except Exception as e:
+        request.dbsession.rollback()
+        log.error("Error {} while adding product instance".format(str(e)))
+        return False, str(e)
 
-    project = relationship("Project")
+
+def task_exist(request, user_id, task_id):
+    res = (
+        request.dbsession.query(RemoteSQLTask)
+        .filter(RemoteSQLTask.user_id == user_id)
+        .filter(RemoteSQLTask.task_id == task_id)
+        .first()
+    )
+    if res is not None:
+        return True
+    return False
+
+
+def get_task_file(request, user_id, task_id):
+    res = (
+        request.dbsession.query(RemoteSQLTask)
+        .filter(RemoteSQLTask.user_id == user_id)
+        .filter(RemoteSQLTask.task_id == task_id)
+        .first()
+    )
+    if res is not None:
+        return res.task_file
+    else:
+        return None

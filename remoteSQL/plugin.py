@@ -1,8 +1,13 @@
 import formshare.plugins as plugins
 import formshare.plugins.utilities as u
-from .views import ExecuteSQL
-import sys
-import os
+from .views import (
+    ExecuteSQL,
+    GetDatabases,
+    GetTables,
+    GetFields,
+    CheckTaskStatus,
+    GetTaskResult,
+)
 
 
 class RemoteSQL(plugins.SingletonPlugin):
@@ -21,6 +26,36 @@ class RemoteSQL(plugins.SingletonPlugin):
                 "execute_remote_sql",
                 "/user/{userid}/analytics/tools/remote_sql/execute",
                 ExecuteSQL,
+                None,
+            ),
+            u.add_route(
+                "get_task_status",
+                "/user/{userid}/analytics/tools/remote_sql/task_status",
+                CheckTaskStatus,
+                None,
+            ),
+            u.add_route(
+                "get_task_result",
+                "/user/{userid}/analytics/tools/remote_sql/task_result",
+                GetTaskResult,
+                None,
+            ),
+            u.add_route(
+                "get_databases",
+                "/user/{userid}/analytics/tools/remote_sql/databases",
+                GetDatabases,
+                None,
+            ),
+            u.add_route(
+                "get_tables",
+                "/user/{userid}/analytics/tools/remote_sql/tables",
+                GetTables,
+                None,
+            ),
+            u.add_route(
+                "get_fields",
+                "/user/{userid}/analytics/tools/remote_sql/fields",
+                GetFields,
                 None,
             ),
         ]

@@ -4,6 +4,7 @@ from logging.config import fileConfig
 
 from alembic import context
 from formshare.models.meta import Base
+from remoteSQL import orm
 from sqlalchemy import engine_from_config, pool
 
 # this is the Alembic Config object, which provides

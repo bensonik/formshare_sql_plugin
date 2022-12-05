@@ -1,6 +1,5 @@
 from formshare.config.celery_app import celeryApp
 from formshare.config.celery_class import CeleryTask
-import urllib.parse as parse
 from subprocess import Popen, PIPE
 import zipfile
 
@@ -14,7 +13,8 @@ class ExecutionError(Exception):
 @celeryApp.task(bind=True, base=CeleryTask)
 def execute_sql_async(
     self,
-    settings,
+    mysql_host,
+    mysql_port,
     mysql_user,
     mysql_password,
     sql,
@@ -22,10 +22,6 @@ def execute_sql_async(
     output_file,
     zip_file,
 ):
-    mysql_host = settings.get("mysql.host")
-    mysql_port = settings.get("mysql.port")
-    mysql_user = parse.quote(mysql_user)
-    mysql_password = parse.quote(mysql_password)
     uri = (
         mysql_user
         + ":"
