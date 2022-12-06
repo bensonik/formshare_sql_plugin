@@ -17,6 +17,7 @@ def execute_sql_async(
     mysql_port,
     mysql_user,
     mysql_password,
+    mysql_database,
     sql,
     output_format,
     output_file,
@@ -31,7 +32,7 @@ def execute_sql_async(
         + ":"
         + mysql_port
         + "/"
-        + mysql_user
+        + mysql_database
     )
     args = ["mysqlsh", "--sql", "--uri=" + uri]
     if output_format == "json":

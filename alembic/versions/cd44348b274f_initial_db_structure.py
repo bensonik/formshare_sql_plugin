@@ -7,6 +7,7 @@ Create Date: 2022-11-21 10:04:21.440863
 """
 from alembic import op
 import sqlalchemy as sa
+from sqlalchemy.dialects import mysql
 
 
 # revision identifiers, used by Alembic.
@@ -22,7 +23,9 @@ def upgrade():
         sa.Column("task_id", sa.Unicode(length=64), nullable=False),
         sa.Column("user_id", sa.Unicode(length=120), nullable=True),
         sa.Column("task_cdate", sa.DateTime(), nullable=True),
-        sa.Column("task_file", sa.Unicode(length=64), nullable=True),
+        sa.Column(
+            "task_file", mysql.MEDIUMTEXT(collation="utf8mb4_unicode_ci"), nullable=True
+        ),
         sa.ForeignKeyConstraint(
             ["user_id"],
             ["fsuser.user_id"],

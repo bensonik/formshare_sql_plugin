@@ -6,6 +6,7 @@ from sqlalchemy import (
     Unicode,
 )
 from sqlalchemy.orm import relationship
+from sqlalchemy.dialects.mysql import MEDIUMTEXT
 
 
 class RemoteSQLTask(Base):
@@ -17,6 +18,6 @@ class RemoteSQLTask(Base):
         index=True,
     )
     task_cdate = Column(DateTime)
-    task_file = Column(Unicode(64))
+    task_file = Column(MEDIUMTEXT(collation="utf8mb4_unicode_ci"))
 
     fsuser = relationship("User")

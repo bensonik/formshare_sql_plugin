@@ -12,7 +12,6 @@ from .views import (
 
 class RemoteSQL(plugins.SingletonPlugin):
     plugins.implements(plugins.IRoutes)
-    plugins.implements(plugins.IConfig)
     plugins.implements(plugins.IDatabase)
 
     def before_mapping(self, config):
@@ -61,10 +60,6 @@ class RemoteSQL(plugins.SingletonPlugin):
         ]
 
         return custom_map
-
-    def update_config(self, config):
-        # We add here the templates of the plugin to the config
-        u.add_templates_directory(config, "templates")
 
     def update_orm(self, config):
         config.include("remoteSQL.orm")

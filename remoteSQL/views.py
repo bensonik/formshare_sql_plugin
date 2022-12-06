@@ -56,6 +56,10 @@ class ExecuteSQL(FormSharePrivateView):
         mysql_password = get_query_password(self.request, user_id)
         mysql_password = decode_data(self.request, mysql_password.encode()).decode()
         mysql_password = parse.quote(mysql_password)
+        if "schema" in request_data.keys():
+            mysql_database = request_data["schema"]
+        else:
+            mysql_database = mysql_user
         if mysql_user is not None:
             if self.request.params.get("async", "false") == "false":
                 uri = (
@@ -67,7 +71,7 @@ class ExecuteSQL(FormSharePrivateView):
                     + ":"
                     + mysql_port
                     + "/"
-                    + mysql_user
+                    + mysql_database
                 )
                 args = ["mysqlsh", "--sql", "--uri=" + uri]
                 if output_format == "json":
@@ -105,6 +109,7 @@ class ExecuteSQL(FormSharePrivateView):
                         mysql_port,
                         mysql_user,
                         mysql_password,
+                        mysql_database,
                         request_data["sql"],
                         output_format,
                         output_file,
@@ -112,8 +117,12 @@ class ExecuteSQL(FormSharePrivateView):
                     ),
                     queue="FormShare",
                 )
-                add_task(self.request, user_id, task.id, zip_file)
-                return {"task_id": task.id}
+                self.stripApiResult = True
+                added, message = add_task(self.request, user_id, task.id, zip_file)
+                if added:
+                    return {"task_id": task.id}
+                else:
+                    self.append_to_errors("Error {} while storing task".format(message))
         else:
             self.append_to_errors("You haven't activated the analytics module")
         return {}
@@ -132,6 +141,7 @@ class CheckTaskStatus(FormSharePrivateView):
         if user_id != self.user.login:
             raise HTTPNotFound
         if task_exist(self.request, user_id, request_data["task"]):
+            self.stripApiResult = True
             status, message = get_task_status(self.request, request_data["task"])
             if status == -1:
                 return {"status": "running"}
@@ -190,6 +200,7 @@ class GetDatabases(FormSharePrivateView):
         if user_id != self.user.login:
             raise HTTPNotFound
         mysql_user = parse.quote(get_query_user(self.request, user_id))
+        self.stripApiResult = True
         if mysql_user is not None:
             databases = get_user_databases(self.request, user_id)
             for a_database in databases:
@@ -226,7 +237,7 @@ def _get_repository_tables(request, project_id, schema):
                 table_type = "DATA TABLE"
                 if a_form_table["table_lkp"] == 1:
                     table_type = "LOOKUP TABLE"
-                if a_form_table["table_name"].find("_msel_"):
+                if a_form_table["table_name"].find("_msel_") >= 0:
                     table_type = "MULTISELECT TABLE"
                 tables.append(
                     {
@@ -272,6 +283,7 @@ class GetTables(FormSharePrivateView):
         if user_id != self.user.login:
             raise HTTPNotFound
         mysql_user = parse.quote(get_query_user(self.request, user_id))
+        self.stripApiResult = True
         if request_data["schema"] == mysql_user:
             return {"tables": _get_user_tables(self.request, request_data["schema"])}
         else:
@@ -314,6 +326,7 @@ class GetFields(FormSharePrivateView):
         mysql_user = parse.quote(get_query_user(self.request, user_id))
         tables = []
         project_id = None
+        self.stripApiResult = True
         if request_data["schema"] == mysql_user:
             tables = _get_user_tables(self.request, request_data["schema"])
         else:
@@ -388,8 +401,10 @@ class GetFields(FormSharePrivateView):
                                     "field_type": field_type,
                                     "field_desc": a_dict_field["field_desc"],
                                     "field_key": bool(a_dict_field["field_key"]),
-                                    "field_rtable": a_dict_field["field_rtable"],
-                                    "field_rfield": a_dict_field["field_rfield"],
+                                    "field_rtable": a_dict_field["field_rtable"]
+                                    or "NA",
+                                    "field_rfield": a_dict_field["field_rfield"]
+                                    or "NA",
                                     "field_rlookup": bool(
                                         a_dict_field["field_rlookup"]
                                     ),
