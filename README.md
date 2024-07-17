@@ -43,6 +43,7 @@ import json
 import requests
 
 url = "http://localhost:5900"
+user_name = "user_name"
 
 login_dict = {
     "X-API-Key": "My API Key",
@@ -59,7 +60,7 @@ token = r.json()["result"]["token"]
 
 ```python
 headers["Authorization"] = "Bearer " + token
-r = requests.get(url + "/user/[user_name]/analytics/tools/remote_sql/databases", headers=headers)
+r = requests.get(url + "/user/" + user_name + "/analytics/tools/remote_sql/databases", headers=headers)
 if r.status_code == 200:
     print(r.json())
 ```
@@ -69,7 +70,7 @@ if r.status_code == 200:
 ```python
 dct = {"schema": "The schema ID. Starts is like FS_xxxxxxxx_xxxx_xxxx_xxxx_xxxxxxxxxxxx"}
 r = requests.post(
-    url + "url + "/user/[user_name]/analytics/tools/remote_sql/tables", data=json.dumps(dct), headers=headers)
+    url + "/user/" + user_name + "/analytics/tools/remote_sql/tables", data=json.dumps(dct), headers=headers)
 if r.status_code == 200:
     print(r.json())
 ```
@@ -79,7 +80,7 @@ if r.status_code == 200:
 ```python
 dct = {"schema": "The schema ID. Starts if FS_xxxx", "table": "maintable"}
 r = requests.post(
-    url + "url + "/user/[user_name]/analytics/tools/remote_sql/fields", data=json.dumps(dct), headers=headers
+    url + "/user/" + user_name + "/analytics/tools/remote_sql/fields", data=json.dumps(dct), headers=headers
 )
 if r.status_code == 200:
     print(r.json())
@@ -90,7 +91,7 @@ if r.status_code == 200:
 ```python
 dct = {"sql": "SELECT * FROM FS_xxxxxxxx_xxxx_xxxx_xxxx_xxxxxxxxxxxx.maintable"}
 r = requests.post(
-    url + "url + "/user/[user_name]/analytics/tools/remote_sql/execute", data=json.dumps(dct), headers=headers
+    url + "/user/" + user_name + "/analytics/tools/remote_sql/execute", data=json.dumps(dct), headers=headers
 )
 if r.status_code == 200:
     open('./data.zip', 'wb').write(r.content)    
@@ -101,7 +102,7 @@ if r.status_code == 200:
 ```python
 dct = {"sql": "SELECT * FROM FS_xxxxxxxx_xxxx_xxxx_xxxx_xxxxxxxxxxxx.maintable"}
 r = requests.post(
-    url + "url + "/user/[user_name]/analytics/tools/remote_sql/execute?async=true", data=json.dumps(dct), headers=headers
+    url + "/user/" + user_name + "/analytics/tools/remote_sql/execute?async=true", data=json.dumps(dct), headers=headers
 )
 if r.status_code == 200:
     task_id = r.json()["result"]["task_id"]
@@ -112,7 +113,7 @@ if r.status_code == 200:
 ```python
 dct = {"task": "Task ID"}
 r = requests.post(
-    url + "url + "/user/[user_name]/analytics/tools/remote_sql/task_status", data=json.dumps(dct), headers=headers
+    url + "/user/" + user_name + "/analytics/tools/remote_sql/task_status", data=json.dumps(dct), headers=headers
 )
 if r.status_code == 200:
     print(r.json()["result"]["status"]
@@ -122,7 +123,7 @@ if r.status_code == 200:
 
 ```python
 dct = {"task": "a326d519-b55c-4b7f-8d33-0f8a6261072f"}
-r = requests.post(url + "/user/cquiros/analytics/tools/remote_sql/task_result",data=json.dumps(dct), headers=headers)
+r = requests.post(url + "/user/" + user_name + "/analytics/tools/remote_sql/task_result",data=json.dumps(dct), headers=headers)
 if r.status_code == 200:
     print("OK")
     open('./data.zip', 'wb').write(r.content)
